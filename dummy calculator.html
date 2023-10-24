@@ -1,0 +1,537 @@
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <style>
+        .elementor {
+            box-sizing: border-box;
+        }
+
+        .elementor-container {
+            max-width: 1140px;
+            display: flex;
+            margin-right: auto;
+            margin-left: auto;
+            position: relative;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .elementor-row {
+            width: 100%;
+            display: flex;
+        }
+
+        .elementor-column {
+            width: 50%;
+        }
+
+        .elementor-column-wrap {
+            width: 100%;
+            position: relative;
+            display: flex;
+        }
+
+        .elementor-widget-wrap {
+            position: relative;
+            width: 100%;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 10px;
+        }
+
+        .elementor-widget-wrap>.elementor-element {
+            width: 100%;
+        }
+
+        .elementor-widget-container {
+            padding: 20px 10px 10px 10px;
+        }
+
+        .calcDiv {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calc-by-hour {
+            display: none;
+        }
+
+        .calcDiv-col-1 {
+            width: 40%;
+        }
+
+        .calcDiv-col-2 {
+            width: 60%;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            border-collapse: separate;
+        }
+
+        .input-group>input {
+            display: table-cell;
+        }
+
+        .input-group>div {
+            display: table-cell;
+            padding: .4em;
+            border: 1px solid #0b7070;
+            border-left: none;
+        }
+
+        /* .calc-by-project {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+} */
+        .calc-by-hour-amount,
+        .calc-by-hour-rate,
+        .calc-by-reverse {
+            display: none;
+        }
+
+        input[type=checkbox],
+        input[type=radio] {
+            box-sizing: border-box;
+            padding: 0;
+        }
+
+        #salary-calc-btn {
+            border-radius: 0;
+            margin: 10px auto;
+            border-radius: 10px;
+            padding: 8px 38px;
+            color: #ffffff;
+            border-color: #ff3297;
+            background-color: #ff3297;
+        }
+
+        .salary-table-panel {
+            border: 2px solid #0b7070;
+            padding: 10px;
+        }
+
+        .salaryCalculator-row input,
+        .salaryCalculator-row select,
+        .salaryCalculator-row input:focus {
+            padding: .4em;
+            box-shadow: none !important;
+            border: 1px solid #0b7070;
+            border-radius: 0;
+            width: 100%;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-width: 1px 0 0 1px;
+            margin: 0 0 1.5em;
+            width: 100%;
+        }
+
+        td,
+        th {
+            padding: 8px;
+            text-align: left;
+            border-width: 0 1px 1px 0;
+            border: 1px solid rgba(0, 0, 0, .1);
+        }
+
+        h5 {
+            font-size: 18px;
+            font-size: 1.125rem;
+        }
+
+        .payment-info {
+            text-align: right;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="elementor-container">
+        <div class="elementor-row">
+            <div
+                class="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-ba5a157">
+                <div class="elementor-column-wrap elementor-element-populated">
+                    <div class="elementor-widget-wrap">
+                        <div class="elementor-element elementor-element-988e752 elementor-widget elementor-widget-html">
+                            <div class="elementor-widget-container">
+                                <div class="calc-col-1">
+                                    <div class="salaryCalculator-row">
+                                        <div class="calcDiv">
+                                            <div class="calcDiv-col-1">
+                                                <label for="sumBasedOn">Calculator Type:</label>
+                                            </div>
+                                            <div class="calcDiv-col-2">
+                                                <select name="sumBasedOn" id="sumBasedOn"
+                                                    onchange="changeInvoiceType(this)">
+                                                    <option value="regular">Regular Invoice</option>
+                                                    <option value="reverse">Reverse Calculator</option>
+                                                    <option value="hour">Hourly Invoice</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="calcDiv calc-by-project">
+                                            <div class="calcDiv-col-1">
+                                                <label class="calc-label" for="totalInvoiceAmount">Invoicing amount:
+                                                </label>
+                                            </div>
+                                            <div class="calcDiv-col-2">
+                                                <div class="input-group">
+                                                    <input id="totalInvoiceAmount" class="form-control"
+                                                        autocomplete="off" name="totalInvoiceAmount" type="number"
+                                                        value="2000">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="calcDiv calc-by-reverse">
+                                            <div class="calcDiv-col-1">
+                                                <label class="calc-label" for="totalInvoiceAmount">Salary received:
+                                                </label>
+                                            </div>
+                                            <div class="calcDiv-col-2">
+                                                <div class="input-group">
+                                                    <input id="totalSalaryAmount" class="form-control"
+                                                        autocomplete="off" name="totalInvoiceAmount" type="number"
+                                                        value="1207.05">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="calcDiv calc-by-hour-amount">
+                                            <div class="calcDiv-col-1">
+                                                <label class="calc-label" for="totalHours">Work hours: </label>
+                                            </div>
+                                            <div class="calcDiv-col-2">
+                                                <div class="input-group">
+                                                    <input id="totalHours" class="form-control" autocomplete="off"
+                                                        name="totalHours" type="number">
+                                                    <div class="input-group-addon">hours</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="calcDiv calc-by-hour-rate">
+                                            <div class="calcDiv-col-1">
+                                                <label class="calc-label" for="amountPerHour">Hourly rate:</label>
+                                            </div>
+                                            <div class="calcDiv-col-2">
+                                                <div class="input-group">
+                                                    <input id="amountPerHour" class="form-control" autocomplete="off"
+                                                        name="amountPerHour" type="number">
+                                                    <div class="input-group-addon"> €</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div style="display:flex;margin-bottom:20px">
+                                            <div>
+                                                <input id="taxExemption" name="taxExemption" type="checkbox" checked>
+                                            </div>
+                                            <div style="margin-left:20px">
+                                                <label for="taxExemption">Take into account tax-free minimum ( € 654
+                                                    Monthly)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div style="display:flex;margin-bottom:20px">
+                                            <div>
+                                                <input id="pension" name="pension" type="checkbox" checked>
+                                            </div>
+                                            <div style="margin-left:20px">
+                                                <label for="pension">Funded pension (II pillar)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div><button id="salary-calc-btn" onclick="calculate()">Calculate</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="elementor-column col-md-7">
+                <div class="panel panel-info salary-table-panel">
+                    <div class="panel-heading" style="text-transform: uppercase; font-weight: 800; margin-bottom:20px">
+                        Estimated Income
+                    </div>
+                    <table class="table salary-table">
+                        <tbody>
+                            <tr>
+                                <th colspan="2">Invoices</th>
+                            </tr>
+
+                            <tr>
+                                <td>The amount of the invoice to be submitted</td>
+                                <td class="payment-info">
+                                    <span id="salary-invoice-total-with-vat">0.00</span>&nbsp;€
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th colspan="2">Salary</th>
+                            </tr>
+
+                            <tr>
+                                <td>Total employer's expenditure (payroll)</td>
+                                <td class="payment-info">
+                                    <span id="salary-invoice-total-without-vat">0.00</span>&nbsp;€
+                                </td>
+                            </tr>
+
+                            <tr class="bold">
+                                <td>Income tax (optional)</td>
+                                <td class="payment-info">
+                                    <span id="salary-invoice-income-tax">0.00</span>&nbsp;€
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Social tax</td>
+                                <td class="payment-info">
+                                    <span id="salary-invoice-social-tax">0.00</span>&nbsp;€
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Unemployment insurance taxes (employer 0.8% and employee 1.6%)</td>
+                                <td class="payment-info">
+                                    <span id="salary-invoice-unemployment-insurance">0.00</span>&nbsp;€
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Funded pension 2% (optional)</td>
+                                <td id="salary-employee-servicefee" class="payment-info">
+                                    <span id="salary-invoice-pension">0.00</span>&nbsp;€
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table salary-table">
+                        <tbody>
+                            <tr>
+                                <th colspan="2">Invoicing commissions</th>
+                            </tr>
+                            <tr>
+                                <td>Service fee for invoicing 3% (plus VAT)</td>
+                                <td class="payment-info">
+                                    <span id="salary-employee-service-fee">0.00</span>&nbsp;€
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table salary-table">
+                        <tbody>
+                            <tr>
+                                <td class="success">
+                                    <h5 style="margin-bottom:0px"><strong> Paid to the user </strong></h5>
+                                </td>
+                                <td class="success payment-info">
+                                    <h5 style="margin-bottom:0px">
+                                        <strong>
+                                            <span id="salary-money-to-account">0.00</span>&nbsp;€
+                                        </strong>
+                                    </h5>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    function changeInvoiceType(invoice) {
+        let invoiceType = invoice.value
+        switch (invoiceType) {
+            case 'regular':
+                document.getElementsByClassName("calc-by-project")[0].style.display = 'flex'
+                document.getElementsByClassName("calc-by-reverse")[0].style.display = 'none'
+                document.getElementsByClassName("calc-by-hour-amount")[0].style.display = 'none'
+                document.getElementsByClassName("calc-by-hour-rate")[0].style.display = 'none'
+                break;
+            case 'reverse':
+                document.getElementsByClassName("calc-by-project")[0].style.display = 'none'
+                document.getElementsByClassName("calc-by-reverse")[0].style.display = 'flex'
+                document.getElementsByClassName("calc-by-hour-amount")[0].style.display = 'none'
+                document.getElementsByClassName("calc-by-hour-rate")[0].style.display = 'none'
+                break;
+            case 'hour':
+                document.getElementsByClassName("calc-by-project")[0].style.display = 'none'
+                document.getElementsByClassName("calc-by-reverse")[0].style.display = 'none'
+                document.getElementsByClassName("calc-by-hour-amount")[0].style.display = 'flex'
+                document.getElementsByClassName("calc-by-hour-rate")[0].style.display = 'flex'
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    function calculate() {
+        let maximum_tax_exemption = 654;
+        let income_tax_percentage = 0.2;
+        let pension_percentage = 0.02;
+        let social_tax_percentage = 0.33;
+        let unemployment_insurance_percentage_employer = 0.008;
+        let unemployment_insurance_percentage_employee = 0.016;
+        let service_percentage = 0.03;
+        let vat_percentage = 0.2;
+
+        let invoiceType = document.getElementById("sumBasedOn").value;
+        let invoiceAmount = document.getElementById("totalInvoiceAmount").value;
+        let salaryAmount = parseFloat(document.getElementById("totalSalaryAmount").value);
+        let totalHours = document.getElementById("totalHours").value;
+        let amountPerHour = document.getElementById("amountPerHour").value;
+        let isTaxExempt = document.getElementById("taxExemption").checked;
+        let isPension = document.getElementById("pension").checked;
+
+        let salary_invoice_total_with_vat = document.getElementById("salary-invoice-total-with-vat");
+        let salary_invoice_total_without_vat = document.getElementById("salary-invoice-total-without-vat");
+        let salary_invoice_income_tax = document.getElementById("salary-invoice-income-tax");
+        let salary_invoice_social_tax = document.getElementById("salary-invoice-social-tax");
+        let salary_invoice_unemployment_insurance = document.getElementById("salary-invoice-unemployment-insurance");
+        let salary_invoice_pension = document.getElementById("salary-invoice-pension");
+        let salary_employee_service_fee = document.getElementById("salary-employee-service-fee");
+        let salary_money_to_account = document.getElementById("salary-money-to-account");
+
+        let invoice_amount = 0;
+        let gross_salary;
+        let payroll = 0;
+        let income_tax;
+        let social_tax;
+        let unemployment_insurance_employer;
+        let unemployment_insurance_employee;
+        let pension;
+        let service_fee;
+        let paid_salary;
+
+        if (invoiceType === "reverse" && salaryAmount) {
+            // gross_salary = salaryAmount / 0.7212
+            // salaryAmount = gross_salary - income_tax - unemployment_insurance_employee - pension
+            // salaryAmount = 0.916534 * gross_salary - 305.2008
+            
+            if (isTaxExempt) {
+                gross_salary = (salaryAmount - 305.2008) / 0.625866
+
+                temp_tax_exemption = 1526.004 - 0.72667 * gross_salary
+                tax_exemption = 
+                    temp_tax_exemption < 0 
+                    ? 0 
+                    : temp_tax_exemption > 654 
+                        ? gross_salary 
+                        : temp_tax_exemption
+                
+                pension = isPension ? gross_salary * pension_percentage : 0
+                unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
+                unemployment_insurance_employer = gross_salary * unemployment_insurance_percentage_employer
+                social_tax = gross_salary * social_tax_percentage
+                
+                payroll = gross_salary * (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
+                invoice_amount = payroll / (1 - (service_percentage * (1 + vat_percentage)))
+                service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
+                income_tax = 
+                    tax_exemption > 654 
+                        ? 0 
+                        : (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
+
+            } else {
+                gross_salary = salaryAmount / 0.7712
+                
+                pension = isPension ? gross_salary * pension_percentage : 0
+                unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
+                unemployment_insurance_employer = gross_salary * unemployment_insurance_percentage_employer
+                social_tax = gross_salary * social_tax_percentage
+                
+                payroll = gross_salary * (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
+                invoice_amount = payroll / (1 - (service_percentage * (1 + vat_percentage)))
+                service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
+                income_tax = (gross_salary - pension - unemployment_insurance_employee) * income_tax_percentage
+
+            }
+
+            
+        } else {
+            if (invoiceType === "regular" && invoiceAmount) {
+                invoice_amount = parseFloat(invoiceAmount)
+            }
+            else if (invoiceType === "hour" && amountPerHour && totalHours) {
+                invoice_amount = parseFloat(amountPerHour * totalHours)
+            }
+            else {
+                alert('Input field mandatory!!')
+            }
+
+            service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
+            payroll = invoice_amount - service_fee
+            gross_salary = payroll / (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
+            
+            social_tax = gross_salary * social_tax_percentage
+            unemployment_insurance_employer = gross_salary * unemployment_insurance_percentage_employer
+            unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
+            pension = isPension ? gross_salary * pension_percentage : 0
+
+        if (isTaxExempt) {
+            let tax_exemption =
+                gross_salary > 2100
+                    ? 0
+                    : gross_salary < 1200
+                        ? 654
+                        : 654 - 0.72667 * (gross_salary - 1200)
+
+            income_tax =
+                gross_salary > tax_exemption
+                    ? (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
+                    : 0
+        } else {
+            income_tax = (gross_salary - pension - unemployment_insurance_employee) * income_tax_percentage
+        }
+        }
+
+        paid_salary = gross_salary - income_tax - unemployment_insurance_employee - pension
+
+        // The amount of the invoice to be submitted
+        salary_invoice_total_with_vat.innerHTML = invoice_amount.toFixed(2)
+
+        // Total employer's expenditure (payroll)	
+        salary_invoice_total_without_vat.innerHTML = payroll.toFixed(2)
+
+        // Income tax
+        salary_invoice_income_tax.innerHTML = income_tax.toFixed(2)
+
+        // Social tax
+        salary_invoice_social_tax.innerHTML = (gross_salary * social_tax_percentage).toFixed(2)
+
+        // Unemployment insurance taxes (employer 0.8% and employee 1.6%)	
+        salary_invoice_unemployment_insurance.innerHTML = (unemployment_insurance_employer + unemployment_insurance_employee).toFixed(2)
+
+        // Funded pension 2%
+        salary_invoice_pension.innerHTML = pension.toFixed(2)
+
+        // Service fee for invoicing 3% (plus VAT)
+        salary_employee_service_fee.innerHTML = service_fee.toFixed(2)
+
+        // Paid to the user
+        salary_money_to_account.innerHTML = paid_salary.toFixed(2)
+
+    }
+
+</script>
+
+</html>
