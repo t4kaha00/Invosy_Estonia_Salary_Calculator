@@ -202,7 +202,7 @@
                                                 <div class="input-group">
                                                     <input id="totalSalaryAmount" class="form-control"
                                                         autocomplete="off" name="totalInvoiceAmount" type="number"
-                                                        value="1207.05">
+                                                        value="30">
                                                 </div>
                                             </div>
                                         </div>
@@ -414,6 +414,7 @@
         let invoice_amount = 0;
         let gross_salary;
         let payroll = 0;
+        let tax_exemption = 0
         let income_tax;
         let social_tax;
         let unemployment_insurance_employer;
@@ -423,86 +424,91 @@
         let paid_salary;
 
         if (invoiceType === "reverse" && salaryAmount) {
-
             let temporary_gross_salary
             let temporary_tax_exemption
-            temporary_gross_salary = (salaryAmount - 305.2008) / 0.625866
-            temporary_tax_exemption = 1526.004 - 0.72667 * temporary_gross_salary 
+            if (isTaxExempt) {
+                if (isPension) {
+                    // If there is pension
+                    // ps = gs - 0.02gs - 0.016gs -0.338134gs + 305.2008 = 0.62587 + 305.2008
+                    temporary_gross_salary = (salaryAmount - 305.2008) / 0.62587
+                    temporary_tax_exemption = 1526.004 - 0.72667 * temporary_gross_salary
 
-            if (temporary_tax_exemption < 0) {
-                tax_exemption = 0
-                console.log('temporary_gross_salary more than 2100', temporary_gross_salary)
-            } else if (temporary_tax_exemption > 654) {
-                tax_exemption = 654
-                console.log('temporary_gross_salary less than 1200', temporary_gross_salary)
-            } else {
-                tax_exemption = temporary_tax_exemption
-                console.log('temporary_gross_salary between 1200-2100', temporary_gross_salary)
+                    if (temporary_tax_exemption < 0) {
+                        tax_exemption = 0
+                        console.log('temporary_gross_salary more than 2100', temporary_gross_salary)
+                    } else if (temporary_tax_exemption > 654) {
+                        tax_exemption = 654
+                        console.log('temporary_gross_salary less than 1200', temporary_gross_salary)
+                    } else {
+                        tax_exemption = temporary_tax_exemption
+                        console.log('temporary_gross_salary between 1200-2100', temporary_gross_salary)
+                    }
+
+                    if ((salaryAmount - (tax_exemption * 0.2)) < 0) {
+                        gross_salary = salaryAmount / 0.964
+                        income_tax_percentage = 0
+                    } else {
+                        gross_salary = (salaryAmount - (tax_exemption * 0.2)) / 0.7712
+                    }
+                }
+                else {
+                    // If there is no pension
+                    // ps = gs - 0.016gs -0.342134gs + 305.2008 = 0.641866 + 305.2008
+
+                    temporary_gross_salary = (salaryAmount - 305.2008) / 0.641866
+                    temporary_tax_exemption = 1526.004 - 0.72667 * temporary_gross_salary
+
+                    if (temporary_tax_exemption < 0) {
+                        tax_exemption = 0
+                        console.log('temporary_gross_salary more than 2100', temporary_gross_salary)
+                    } else if (temporary_tax_exemption > 654) {
+                        tax_exemption = 654
+                        console.log('temporary_gross_salary less than 1200', temporary_gross_salary)
+                    } else {
+                        tax_exemption = temporary_tax_exemption
+                        console.log('temporary_gross_salary between 1200-2100', temporary_gross_salary)
+                    }
+
+                    if ((salaryAmount - (tax_exemption * 0.2)) < 0) {
+                        gross_salary = salaryAmount / 0.9877
+                        income_tax_percentage = 0
+                        console.log('gross salary is less than tax exemption', gross_salary)
+                    } else {
+                        gross_salary = (salaryAmount - (tax_exemption * 0.2)) / 0.7877
+                        console.log('gross salary is more than tax exemption', gross_salary)
+                    }
+                    console.log('Final gross salary', gross_salary)
+
+                }
+
+
             }
-
-            // income_tax = (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * 0.2
-            // gross_salary = paid_salary + income_tax + unemployment_insurance_employee + pension
-            // gross_salary = paid_salary + unemployment_insurance_employee + pension + 0.2*gross_salary - 0.2*pension - 0.2*unemployment_insurance_employee - 0.2*tax_exemption
-            // gross_salary = paid_salary + gross_salary * (0.016+0.02+0.2-0.004-0.0032) - 0.2*tax_exemption
-            gross_salary = (salaryAmount - 0.2 * tax_exemption) / 0.7712
-
+            else {
+                // If tax exemption is not calculated
+                tax_exemption = 0
+                gross_salary = isPension ? (salaryAmount / 0.764) : (salaryAmount / 0.784)
+            }
             // console.log('salaryAmount', salaryAmount)
             // console.log('temporary_gross_salary', temporary_gross_salary)
             // console.log('gross_salary', gross_salary)
             // console.log('temporary_tax_exemption', temporary_tax_exemption)
             // console.log('tax_exemption', tax_exemption)
 
-            // income_tax = (gross_salary - 0.02*gross - 0.016*gross_salary - (1526.004 - 0.72667*gross_salary)) * 0.2
-            // income_tax = 0.338134 * gross_salary - 305.2008
+            pension = isPension ? gross_salary * pension_percentage : 0
+            unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
+            unemployment_insurance_employer = gross_salary * unemployment_insurance_percentage_employer
+            social_tax = gross_salary * social_tax_percentage
 
-            // paid_salary = 0.625866 * gross_salary + 305.2008
+            payroll = gross_salary * (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
+            invoice_amount = payroll / (1 - (service_percentage * (1 + vat_percentage)))
+            service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
+            income_tax = (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
+            console.log('tax_exemption', tax_exemption)
+            console.log('income_tax', income_tax)
 
-            // gross_salary = salaryAmount / 0.7212
-            // salaryAmount = gross_salary - income_tax - unemployment_insurance_employee - pension
-            // salaryAmount = 0.916534 * gross_salary - 305.2008
-            
-            if (isTaxExempt) {
-                // gross_salary = (salaryAmount - 305.2008) / 0.625866
 
-                // temp_tax_exemption = 1526.004 - 0.72667 * gross_salary
-                // tax_exemption = 
-                //     temp_tax_exemption < 0 
-                //     ? 0 
-                //     : temp_tax_exemption > 654 
-                //         ? gross_salary 
-                        // : temp_tax_exemption
-                
-                pension = isPension ? gross_salary * pension_percentage : 0
-                unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
-                unemployment_insurance_employer = gross_salary * unemployment_insurance_percentage_employer
-                social_tax = gross_salary * social_tax_percentage
-                
-                payroll = gross_salary * (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
-                invoice_amount = payroll / (1 - (service_percentage * (1 + vat_percentage)))
-                service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
-                tax_exemption = 0 // -----------
-                income_tax = 
-                    tax_exemption > 654 
-                        ? 0 
-                        : (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
-
-            } else {
-                gross_salary = salaryAmount / 0.7712
-                
-                pension = isPension ? gross_salary * pension_percentage : 0
-                unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
-                unemployment_insurance_employer = gross_salary * unemployment_insurance_percentage_employer
-                social_tax = gross_salary * social_tax_percentage
-                
-                payroll = gross_salary * (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
-                invoice_amount = payroll / (1 - (service_percentage * (1 + vat_percentage)))
-                service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
-                income_tax = (gross_salary - pension - unemployment_insurance_employee) * income_tax_percentage
-
-            }
-
-            
-        } else {
+        }
+        else {
             if (invoiceType === "regular" && invoiceAmount) {
                 invoice_amount = parseFloat(invoiceAmount)
             }
@@ -516,27 +522,27 @@
             service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
             payroll = invoice_amount - service_fee
             gross_salary = payroll / (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
-            
+
             social_tax = gross_salary * social_tax_percentage
             unemployment_insurance_employer = gross_salary * unemployment_insurance_percentage_employer
             unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
             pension = isPension ? gross_salary * pension_percentage : 0
 
-        if (isTaxExempt) {
-            let tax_exemption =
-                gross_salary > 2100
-                    ? 0
-                    : gross_salary < 1200
-                        ? 654
-                        : 654 - 0.72667 * (gross_salary - 1200)
+            if (isTaxExempt) {
+                let tax_exemption =
+                    gross_salary > 2100
+                        ? 0
+                        : gross_salary < 1200
+                            ? 654
+                            : 654 - 0.72667 * (gross_salary - 1200)
 
-            income_tax =
-                gross_salary > tax_exemption
-                    ? (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
-                    : 0
-        } else {
-            income_tax = (gross_salary - pension - unemployment_insurance_employee) * income_tax_percentage
-        }
+                income_tax =
+                    gross_salary > tax_exemption
+                        ? (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
+                        : 0
+            } else {
+                income_tax = (gross_salary - pension - unemployment_insurance_employee) * income_tax_percentage
+            }
         }
 
         paid_salary = gross_salary - income_tax - unemployment_insurance_employee - pension
