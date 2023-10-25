@@ -233,7 +233,7 @@
                                         <br />
                                         <div style="display:flex;margin-bottom:20px">
                                             <div>
-                                                <input id="taxExemption" name="taxExemption" type="checkbox" checked>
+                                                <input id="taxExemption" name="taxExemption" type="checkbox">
                                             </div>
                                             <div style="margin-left:20px">
                                                 <label for="taxExemption">Take into account tax-free minimum ( € 654
@@ -243,7 +243,7 @@
                                         </div>
                                         <div style="display:flex;margin-bottom:20px">
                                             <div>
-                                                <input id="pension" name="pension" type="checkbox" checked>
+                                                <input id="pension" name="pension" type="checkbox">
                                             </div>
                                             <div style="margin-left:20px">
                                                 <label for="pension">Funded pension (II pillar)</label>
@@ -428,9 +428,11 @@
             let temporary_tax_exemption
             if (isTaxExempt) {
                 if (isPension) {
-                    // If there is pension
-                    // ps = gs - 0.02gs - 0.016gs -0.338134gs + 305.2008 = 0.62587 + 305.2008
-                    temporary_gross_salary = (salaryAmount - 305.2008) / 0.62587
+                    // If there is pension and tax exemption
+                    temporary_gross_salary = 
+                        salaryAmount < 305.2008 
+                        ? salaryAmount / 0.964 
+                        : (salaryAmount - 305.2008) / 0.62587
                     temporary_tax_exemption = 1526.004 - 0.72667 * temporary_gross_salary
 
                     if (temporary_tax_exemption < 0) {
@@ -452,10 +454,13 @@
                     }
                 }
                 else {
-                    // If there is no pension
+                    // If there is no pension but there is tax exemption
                     // ps = gs - 0.016gs -0.342134gs + 305.2008 = 0.641866 + 305.2008
 
-                    temporary_gross_salary = (salaryAmount - 305.2008) / 0.641866
+                    temporary_gross_salary = 
+                        salaryAmount < 305.2008 
+                        ? salaryAmount / 0.984
+                        : (salaryAmount - 305.2008) / 0.641866
                     temporary_tax_exemption = 1526.004 - 0.72667 * temporary_gross_salary
 
                     if (temporary_tax_exemption < 0) {
@@ -470,7 +475,7 @@
                     }
 
                     if ((salaryAmount - (tax_exemption * 0.2)) < 0) {
-                        gross_salary = salaryAmount / 0.9877
+                        gross_salary = salaryAmount / 0.984
                         income_tax_percentage = 0
                         console.log('gross salary is less than tax exemption', gross_salary)
                     } else {
@@ -486,7 +491,8 @@
             else {
                 // If tax exemption is not calculated
                 tax_exemption = 0
-                gross_salary = isPension ? (salaryAmount / 0.764) : (salaryAmount / 0.784)
+                gross_salary = isPension ? (salaryAmount / 0.7712) : (salaryAmount / 0.7872)
+                console.log('Tax Exemption unchecked gross salary :::::', gross_salary);
             }
             // console.log('salaryAmount', salaryAmount)
             // console.log('temporary_gross_salary', temporary_gross_salary)
