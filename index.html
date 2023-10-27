@@ -188,8 +188,7 @@
                                             <div class="calcDiv-col-2">
                                                 <div class="input-group">
                                                     <input id="totalInvoiceAmount" class="form-control"
-                                                        autocomplete="off" name="totalInvoiceAmount" type="number"
-                                                        value="2000">
+                                                        autocomplete="off" name="totalInvoiceAmount" type="number">
                                                 </div>
                                             </div>
                                         </div>
@@ -201,8 +200,7 @@
                                             <div class="calcDiv-col-2">
                                                 <div class="input-group">
                                                     <input id="totalSalaryAmount" class="form-control"
-                                                        autocomplete="off" name="totalInvoiceAmount" type="number"
-                                                        value="30">
+                                                        autocomplete="off" name="totalInvoiceAmount" type="number">
                                                 </div>
                                             </div>
                                         </div>
@@ -233,7 +231,7 @@
                                         <br />
                                         <div style="display:flex;margin-bottom:20px">
                                             <div>
-                                                <input id="taxExemption" name="taxExemption" type="checkbox">
+                                                <input id="taxExemption" name="taxExemption" type="checkbox" checked>
                                             </div>
                                             <div style="margin-left:20px">
                                                 <label for="taxExemption">Take into account tax-free minimum ( € 654
@@ -324,7 +322,7 @@
                                 <th colspan="2">Invoicing commissions</th>
                             </tr>
                             <tr>
-                                <td>Service fee for invoicing 3% (plus VAT)</td>
+                                <td>Service fee for invoicing 3% (including VAT)</td>
                                 <td class="payment-info">
                                     <span id="salary-employee-service-fee">0.00</span>&nbsp;€
                                 </td>
@@ -385,7 +383,6 @@
     }
 
     function calculate() {
-        let maximum_tax_exemption = 654;
         let income_tax_percentage = 0.2;
         let pension_percentage = 0.02;
         let social_tax_percentage = 0.33;
@@ -424,81 +421,43 @@
         let paid_salary;
 
         if (invoiceType === "reverse" && salaryAmount) {
-            let temporary_gross_salary
-            let temporary_tax_exemption
             if (isTaxExempt) {
                 if (isPension) {
-                    // If there is pension and tax exemption
-                    temporary_gross_salary = 
-                        salaryAmount < 305.2008 
-                        ? salaryAmount / 0.964 
-                        : (salaryAmount - 305.2008) / 0.62587
-                    temporary_tax_exemption = 1526.004 - 0.72667 * temporary_gross_salary
-
-                    if (temporary_tax_exemption < 0) {
-                        tax_exemption = 0
-                        console.log('temporary_gross_salary more than 2100', temporary_gross_salary)
-                    } else if (temporary_tax_exemption > 654) {
-                        tax_exemption = 654
-                        console.log('temporary_gross_salary less than 1200', temporary_gross_salary)
-                    } else {
-                        tax_exemption = temporary_tax_exemption
-                        console.log('temporary_gross_salary between 1200-2100', temporary_gross_salary)
-                    }
-
-                    if ((salaryAmount - (tax_exemption * 0.2)) < 0) {
-                        gross_salary = salaryAmount / 0.964
-                        income_tax_percentage = 0
-                    } else {
-                        gross_salary = (salaryAmount - (tax_exemption * 0.2)) / 0.7712
-                    }
+                    // If pension and tax exemption are checked 
+                    gross_salary =
+                        salaryAmount < 654
+                            ? salaryAmount / 0.964
+                            : salaryAmount > 654 && salaryAmount < 1055
+                                ? (salaryAmount - 130.8) / 0.7712
+                                : salaryAmount > 1055 && salaryAmount < 1619
+                                    ? (salaryAmount - 305.2008) / 0.641866
+                                    : salaryAmount / 0.764
                 }
                 else {
-                    // If there is no pension but there is tax exemption
-                    // ps = gs - 0.016gs -0.342134gs + 305.2008 = 0.641866 + 305.2008
-
-                    temporary_gross_salary = 
-                        salaryAmount < 305.2008 
-                        ? salaryAmount / 0.984
-                        : (salaryAmount - 305.2008) / 0.641866
-                    temporary_tax_exemption = 1526.004 - 0.72667 * temporary_gross_salary
-
-                    if (temporary_tax_exemption < 0) {
-                        tax_exemption = 0
-                        console.log('temporary_gross_salary more than 2100', temporary_gross_salary)
-                    } else if (temporary_tax_exemption > 654) {
-                        tax_exemption = 654
-                        console.log('temporary_gross_salary less than 1200', temporary_gross_salary)
-                    } else {
-                        tax_exemption = temporary_tax_exemption
-                        console.log('temporary_gross_salary between 1200-2100', temporary_gross_salary)
-                    }
-
-                    if ((salaryAmount - (tax_exemption * 0.2)) < 0) {
-                        gross_salary = salaryAmount / 0.984
-                        income_tax_percentage = 0
-                        console.log('gross salary is less than tax exemption', gross_salary)
-                    } else {
-                        gross_salary = (salaryAmount - (tax_exemption * 0.2)) / 0.7877
-                        console.log('gross salary is more than tax exemption', gross_salary)
-                    }
-                    console.log('Final gross salary', gross_salary)
-
+                    // If tax exemption is checked but pension unchecked
+                    gross_salary =
+                        salaryAmount < 654
+                            ? salaryAmount / 0.984
+                            : salaryAmount > 654 && salaryAmount < 1077
+                                ? (salaryAmount - 130.8) / 0.7872 : salaryAmount > 1076 && salaryAmount < 1653
+                                    ? (salaryAmount - 305.2008) / 0.641866
+                                    : salaryAmount / 0.7872
                 }
 
-
+                tax_exemption =
+                    gross_salary > 2100
+                        ? 0
+                        : gross_salary < 1200
+                            ? 654
+                            : gross_salary < 654
+                                ? 0
+                                : 654 - 0.72667 * (gross_salary - 1200)
             }
             else {
-                // If tax exemption is not calculated
+                // If tax exemption is unchecked
                 tax_exemption = 0
                 gross_salary = isPension ? (salaryAmount / 0.7712) : (salaryAmount / 0.7872)
-                console.log('Tax Exemption unchecked gross salary :::::', gross_salary);
             }
-            // console.log('salaryAmount', salaryAmount)
-            // console.log('temporary_gross_salary', temporary_gross_salary)
-            // console.log('gross_salary', gross_salary)
-            // console.log('temporary_tax_exemption', temporary_tax_exemption)
-            // console.log('tax_exemption', tax_exemption)
 
             pension = isPension ? gross_salary * pension_percentage : 0
             unemployment_insurance_employee = gross_salary * unemployment_insurance_percentage_employee
@@ -508,11 +467,10 @@
             payroll = gross_salary * (1 + social_tax_percentage + unemployment_insurance_percentage_employer)
             invoice_amount = payroll / (1 - (service_percentage * (1 + vat_percentage)))
             service_fee = invoice_amount * (service_percentage * (1 + vat_percentage))
-            income_tax = (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
-            console.log('tax_exemption', tax_exemption)
-            console.log('income_tax', income_tax)
-
-
+            income_tax =
+                gross_salary - pension - unemployment_insurance_employee > tax_exemption
+                    ? (gross_salary - pension - unemployment_insurance_employee - tax_exemption) * income_tax_percentage
+                    : 0
         }
         else {
             if (invoiceType === "regular" && invoiceAmount) {
