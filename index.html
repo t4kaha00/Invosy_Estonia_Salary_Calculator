@@ -231,7 +231,7 @@
                                         <br />
                                         <div style="display:flex;margin-bottom:20px">
                                             <div>
-                                                <input id="taxExemption" name="taxExemption" type="checkbox" checked>
+                                                <input id="taxExemption" name="taxExemption" type="checkbox">
                                             </div>
                                             <div style="margin-left:20px">
                                                 <label for="taxExemption">Take into account tax-free minimum ( € 654
@@ -425,23 +425,24 @@
                 if (isPension) {
                     // If pension and tax exemption are checked 
                     gross_salary =
-                        salaryAmount < 654
+                        salaryAmount < 654 // Gross amount is less than 678, which means no income tax calculated
                             ? salaryAmount / 0.964
-                            : salaryAmount > 654 && salaryAmount < 1055
+                            : salaryAmount > 654 && salaryAmount < 1055 // 678 < Gross salary < 1200 (Whole tax exemption of 654€)
                                 ? (salaryAmount - 130.8) / 0.7712
-                                : salaryAmount > 1055 && salaryAmount < 1619
-                                    ? (salaryAmount - 305.2008) / 0.641866
-                                    : salaryAmount / 0.764
+                                : salaryAmount > 1055 && salaryAmount < 1619 // 1200 < Gross salary < 2100 (Tax exemption is calculated by a formula)
+                                    ? (salaryAmount - 305.2008) / 0.625866
+                                    : salaryAmount / 0.7712016 // Gross salary > 2100 (No tax exemption)
                 }
                 else {
                     // If tax exemption is checked but pension unchecked
                     gross_salary =
-                        salaryAmount < 654
+                        salaryAmount < 654 // Gross amount is less than 678, which means no income tax calculated
                             ? salaryAmount / 0.984
-                            : salaryAmount > 654 && salaryAmount < 1077
-                                ? (salaryAmount - 130.8) / 0.7872 : salaryAmount > 1076 && salaryAmount < 1653
+                            : salaryAmount > 654 && salaryAmount < 1077 // 678 < Gross salary < 1200 (Whole tax exemption of 654€)
+                                ? (salaryAmount - 130.8) / 0.7872
+                                : salaryAmount > 1076 && salaryAmount < 1653 // 1200 < Gross salary < 2100 (Tax exemption is calculated by a formula)
                                     ? (salaryAmount - 305.2008) / 0.641866
-                                    : salaryAmount / 0.7872
+                                    : salaryAmount / 0.7872 // Gross salary > 2100 (No tax exemption)
                 }
 
                 tax_exemption =
